@@ -1,0 +1,15 @@
+/vendor
+/node_modules
+composer.lock
+.phpunit.result.cache
+.phpunit.cache
+.php-cs-fixer.cache
+.pint.cache
+.phpstan.cache
+.idea
+.vscode
+.DS_Store
+coverage/
+
+# Internal API specification — keep out of public repository
+OmniLeads_API_Documentation.pdf

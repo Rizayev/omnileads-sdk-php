@@ -1,0 +1,67 @@
+{
+    "name": "madtec/omnileads-sdk",
+    "description": "PHP SDK for OmniLeads API with Laravel integration",
+    "keywords": ["omnileads", "madtec", "sdk", "laravel", "api", "php"],
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/madtec/omnileads-sdk-php",
+    "support": {
+        "issues": "https://github.com/madtec/omnileads-sdk-php/issues",
+        "source": "https://github.com/madtec/omnileads-sdk-php"
+    },
+    "authors": [
+        {
+            "name": "ЗАМЕНИ_ИМЯ",
+            "email": "change-me@example.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "guzzlehttp/guzzle": "^7.8",
+        "psr/log": "^3.0",
+        "illuminate/support": "^10.0|^11.0|^12.0",
+        "illuminate/contracts": "^10.0|^11.0|^12.0"
+    },
+    "require-dev": {
+        "pestphp/pest": "^2.34",
+        "phpstan/phpstan": "^1.11",
+        "laravel/pint": "^1.13",
+        "orchestra/testbench": "^8.0|^9.0|^10.0",
+        "mockery/mockery": "^1.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Madtec\\OmniLeads\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Madtec\\OmniLeads\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "analyse": "vendor/bin/phpstan analyse",
+        "format": "vendor/bin/pint",
+        "format-test": "vendor/bin/pint --test"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Madtec\\OmniLeads\\OmniLeadsServiceProvider"
+            ],
+            "aliases": {
+                "OmniLeads": "Madtec\\OmniLeads\\Facades\\OmniLeads"
+            }
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

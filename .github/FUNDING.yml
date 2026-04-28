@@ -1,0 +1,5 @@
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/displaying-a-sponsor-button-in-your-repository
+# Uncomment and fill in the platforms you actually want to use:
+# github: [your-org]
+# patreon: your-org
+# custom: ['https://example.com/donate']
