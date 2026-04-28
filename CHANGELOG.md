@@ -23,5 +23,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Two-flavour authentication: `X-Api-Key` for the bulk of the API and `Bearer` JWT for webhook settings
 - Pre-flight validation (GUID, ISO date, page bounds) raising `ConfigurationException` before any HTTP request
 
-[Unreleased]: https://github.com/madtec/omnileads-sdk-php/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/madtec/omnileads-sdk-php/releases/tag/v1.0.0
+[Unreleased]: https://github.com/Rizayev/omnileads-sdk-php/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/Rizayev/omnileads-sdk-php/releases/tag/v1.0.0

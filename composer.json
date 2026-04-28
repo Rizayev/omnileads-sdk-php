@@ -4,10 +4,10 @@
     "keywords": ["omnileads", "madtec", "sdk", "laravel", "api", "php"],
     "type": "library",
     "license": "MIT",
-    "homepage": "https://github.com/madtec/omnileads-sdk-php",
+    "homepage": "https://github.com/Rizayev/omnileads-sdk-php",
     "support": {
-        "issues": "https://github.com/madtec/omnileads-sdk-php/issues",
-        "source": "https://github.com/madtec/omnileads-sdk-php"
+        "issues": "https://github.com/Rizayev/omnileads-sdk-php/issues",
+        "source": "https://github.com/Rizayev/omnileads-sdk-php"
     },
     "authors": [
         {

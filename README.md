@@ -1,8 +1,8 @@
 # OmniLeads SDK for PHP
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/madtec/omnileads-sdk.svg?style=flat-square)](https://packagist.org/packages/madtec/omnileads-sdk)
-[![Tests](https://github.com/madtec/omnileads-sdk-php/actions/workflows/tests.yml/badge.svg)](https://github.com/madtec/omnileads-sdk-php/actions/workflows/tests.yml)
-[![Static Analysis](https://github.com/madtec/omnileads-sdk-php/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/madtec/omnileads-sdk-php/actions/workflows/static-analysis.yml)
+[![Tests](https://github.com/Rizayev/omnileads-sdk-php/actions/workflows/tests.yml/badge.svg)](https://github.com/Rizayev/omnileads-sdk-php/actions/workflows/tests.yml)
+[![Static Analysis](https://github.com/Rizayev/omnileads-sdk-php/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/Rizayev/omnileads-sdk-php/actions/workflows/static-analysis.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/madtec/omnileads-sdk.svg?style=flat-square)](https://packagist.org/packages/madtec/omnileads-sdk)
 [![License](https://img.shields.io/packagist/l/madtec/omnileads-sdk.svg?style=flat-square)](LICENSE)
 
