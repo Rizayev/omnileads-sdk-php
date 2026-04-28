@@ -237,6 +237,100 @@ OMNILEADS_RETRY_ENABLED=false
 Or per-request, by constructing a fresh `OmniLeadsClient` with
 `RetryConfig::disabled()`.
 
+## Known API quirks
+
+Documented here so you do not have to rediscover them. Each item was confirmed by
+running the SDK against the production OmniLeads API.
+
+### `GET /Project` is paginated
+
+The published spec lists the response as a flat array, but the endpoint actually
+returns a paginated wrapper:
+
+```json
+{
+  "items":            [...],
+  "page":             1,
+  "pageSize":         10,
+  "totalCount":       N,
+  "totalPages":       N,
+  "hasPreviousPage":  false,
+  "hasNextPage":      false
+}
+```
+
+`OmniLeads::projects()->list()` unwraps `items` for you. Use `listPaged()` for
+explicit pagination control or `iterateAll()` to walk every page.
+
+### Source `limit` is read-only when project `limitTypeId = 1` (Эффективный)
+
+If the project uses the balanced-between-sources limit type, the API
+auto-distributes the project's total limit across its sources. Trying to
+`PUT /Project/{id}/sources/{sourceId}` with a `limit` in the body returns:
+
+```
+HTTP 400
+{ "message": "Редактирование лимита источника запрещено для выбранного типа лимита проекта" }
+```
+
+The SDK surfaces this as a `ValidationException` with the API message in
+`$e->errorMessage`. To control source limits manually, switch the project to
+`limitTypeId = 3` (Ручной) first via `PUT /Project/{id}`.
+
+### There is no `DELETE /Project/{id}`
+
+The API responds with `HTTP 405 Method Not Allowed`. To soft-delete a project:
+
+```php
+use Madtec\OmniLeads\Facades\OmniLeads;
+use Madtec\OmniLeads\DTO\Requests\UpdateProjectRequest;
+
+$projectId = '...';
+
+// 1. drop every source
+$project = OmniLeads::projects()->get($projectId);
+foreach ($project->projectSources as $src) {
+    OmniLeads::sources()->delete($projectId, $src->id);
+}
+
+// 2. pause it
+OmniLeads::projects()->pause($projectId);
+
+// 3. (optional) flag it visually
+OmniLeads::projects()->update($projectId, new UpdateProjectRequest(
+    name: '[ARCHIVED] '.$project->name,
+));
+```
+
+### `POST /Project/sync` is currently unstable
+
+At the time of writing, the sync endpoint returns `HTTP 500
+{"message":"Внутренняя ошибка сервера"}` for every payload — even the exact
+example from the official documentation. The SDK serializes the payload
+correctly; you will get a `ServerException` until OmniLeads ships a fix.
+Track this with the platform's support if you depend on the sync flow.
+
+### `PUT /Project/{id}` returns the project but skips a few optional fields
+
+`workingDaysOfWeek`, `workingDates`, `excludedDates`, and `description` come back
+as `null` in the immediate `PUT` response, even when the change was applied.
+A subsequent `GET /Project/{id}` returns them correctly. The SDK exposes
+whatever the server sends — if you need the canonical state right after an
+update, re-fetch with `OmniLeads::projects()->get($id)`.
+
+### Source ids are inconsistently typed
+
+`POST /Project/{id}/sources` returns `id` as a string, while
+`PUT /Project/{id}/sources/{sourceId}` returns it as a number. The SDK
+normalizes both into `string $id` on the response DTO, so consumer code does
+not have to care.
+
+### Webhook `phone` is a JSON number
+
+Each phone in `import.completed` arrives as `"phone": 79001234567` (numeric, not
+quoted). The SDK casts it to `string` on `DayPhone::$phone` so you keep
+arbitrary-precision values without losing leading-zero edge cases.
+
 ## Webhook handler
 
 The OmniLeads platform pushes an `import.completed` event after each finished import.
