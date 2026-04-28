@@ -13,19 +13,27 @@ use Madtec\OmniLeads\Exceptions\NotFoundException;
 use Madtec\OmniLeads\Exceptions\ServerException;
 use Madtec\OmniLeads\Exceptions\ValidationException;
 
-test('list returns projects', function (): void {
+test('list unwraps paginated items', function (): void {
     $body = json_encode([
-        [
-            'id' => 'a1b2c3d4-1234-5678-9abc-1234567890ab',
-            'name' => 'P1',
-            'limit' => 100,
-            'limitTypeId' => 1,
-            'limitTypeName' => 'Daily',
-            'createdAt' => '2026-03-23T10:12:45Z',
-            'isActive' => true,
-            'sourcesCount' => 1,
-            'sourceValues' => ['a.com'],
+        'items' => [
+            [
+                'id' => 'a1b2c3d4-1234-5678-9abc-1234567890ab',
+                'name' => 'P1',
+                'limit' => 100,
+                'limitTypeId' => 1,
+                'limitTypeName' => 'Daily',
+                'createdAt' => '2026-03-23T10:12:45Z',
+                'isActive' => true,
+                'sourcesCount' => 1,
+                'sourceValues' => ['a.com'],
+            ],
         ],
+        'page' => 1,
+        'pageSize' => 100,
+        'totalCount' => 1,
+        'totalPages' => 1,
+        'hasPreviousPage' => false,
+        'hasNextPage' => false,
     ], JSON_THROW_ON_ERROR);
 
     $client = $this->buildClient([
@@ -40,6 +48,57 @@ test('list returns projects', function (): void {
 
     expect((string) $this->history[0]['request']->getUri())->toContain('/Project');
     expect($this->history[0]['request']->getHeaderLine('X-Api-Key'))->toBe('test-api-key');
+});
+
+test('listPaged returns PagedResult with metadata', function (): void {
+    $body = json_encode([
+        'items' => [],
+        'page' => 2,
+        'pageSize' => 50,
+        'totalCount' => 120,
+        'totalPages' => 3,
+        'hasPreviousPage' => true,
+        'hasNextPage' => true,
+    ], JSON_THROW_ON_ERROR);
+
+    $client = $this->buildClient([
+        new Response(200, [], $body),
+    ]);
+
+    $page = $client->projects()->listPaged(page: 2, pageSize: 50);
+
+    expect($page->page)->toBe(2)
+        ->and($page->totalPages)->toBe(3)
+        ->and($page->totalCount)->toBe(120)
+        ->and($page->hasNextPage())->toBeTrue();
+});
+
+test('iterateAll walks all pages of /Project', function (): void {
+    $page1 = json_encode([
+        'items' => [
+            ['id' => 'aaaaaaaa-1111-1111-1111-111111111111', 'name' => 'A', 'limit' => 0, 'limitTypeId' => 1, 'limitTypeName' => '', 'createdAt' => '2026-01-01T00:00:00Z', 'isActive' => true, 'sourcesCount' => 0],
+        ],
+        'page' => 1, 'pageSize' => 1, 'totalCount' => 2, 'totalPages' => 2, 'hasPreviousPage' => false, 'hasNextPage' => true,
+    ], JSON_THROW_ON_ERROR);
+
+    $page2 = json_encode([
+        'items' => [
+            ['id' => 'bbbbbbbb-2222-2222-2222-222222222222', 'name' => 'B', 'limit' => 0, 'limitTypeId' => 1, 'limitTypeName' => '', 'createdAt' => '2026-01-01T00:00:00Z', 'isActive' => true, 'sourcesCount' => 0],
+        ],
+        'page' => 2, 'pageSize' => 1, 'totalCount' => 2, 'totalPages' => 2, 'hasPreviousPage' => true, 'hasNextPage' => false,
+    ], JSON_THROW_ON_ERROR);
+
+    $client = $this->buildClient([
+        new Response(200, [], $page1),
+        new Response(200, [], $page2),
+    ]);
+
+    $names = [];
+    foreach ($client->projects()->iterateAll(pageSize: 1) as $item) {
+        $names[] = $item->name;
+    }
+
+    expect($names)->toBe(['A', 'B']);
 });
 
 test('create project sends payload and returns id', function (): void {
